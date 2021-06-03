@@ -1,31 +1,123 @@
-<table fd-table>
-  <thead fd-table-header>
-  <tr fd-table-row>
-    <th fd-table-cell>Column Header</th>
-    <th fd-table-cell>Column Header</th>
-    <th fd-table-cell>Column Header</th>
-    <th fd-table-cell>Column Header</th>
-    <th fd-table-cell>Column Header</th>
-  </tr>
-  </thead>
-  <tbody fd-table-body>
-  <tr *ngFor="let row of tableRows" fd-table-row>
-    <td fd-table-cell>
-      <a fd-link href="#">{{ row.column1 }}</a>
-    </td>
+<div class="overlay">
+  <fd-dynamic-page size="large" ariaLabel="Example Dynamic Page" [autoResponsive]="false">
+    <fd-dynamic-page-header
+      title="Centro dermatologico doctor Oscar Castañeda."
+      subtitle="Sistema de manejo de citas">
+    </fd-dynamic-page-header>
+    <fd-dynamic-page-content>
+      <div class="fd-dynamic-page-section">
+        <app-schedule [baseData]="appointments"></app-schedule>
+      </div>
+      <div class="fd-dynamic-page-section">
+        <fd-toolbar>
+          <label fd-toolbar-label>
+            Historial de citas ({{appointments.length}} historicas)
+          </label>
+          <fd-toolbar-spacer></fd-toolbar-spacer>
+          <fd-input-group
+            glyph="decline"
+            placeholder="Search"
+            [compact]="true"
+            [disabled]="false"
+            [button]="true"
+            [(ngModel)]="searchTerm"
+            (ngModelChange)="searchInputChanged($event)"
+            (addOnButtonClicked)="resetSearch()"
+          >
+          </fd-input-group>
+          <button fd-toolbar-item
+                  fd-button
+                  label="Refrescar"
+                  (click)="refresh()"
+                  [compact]="true"
+                  fdType="transparent"
+                  glyph="refresh"></button>
+          <label fd-form-label>
+            Mostrar citas pasadas:
+          </label>
+          <fd-switch [compact]="true" [(ngModel)]="past" (click)="obfuscatePastData()"></fd-switch>
+          <button fd-toolbar-item
+                  fd-button
+                  label="Nuevo horario disponible"
+                  (click)="openDialog(newItemDialog)"
+                  [compact]="true"
+                  fdType="transparent"
+                  glyph="add"></button>
+        </fd-toolbar>
+        <fd-busy-indicator [loading]="loading" [block]="true" size="l">
+          <table fd-table>
+            <thead fd-table-header>
+            <tr fd-table-row>
+              <th fd-table-cell>ID Cita</th>
+              <th fd-table-cell>Nombre Paciente</th>
+              <th fd-table-cell>Telefono</th>
+              <th fd-table-cell>Estado</th>
+              <th fd-table-cell>Fecha y Hora</th>
+              <th fd-table-cell>Opciones</th>
+            </tr>
+            </thead>
+            <tbody fd-table-body>
+            <tr *ngFor="let row of displayedRows" fd-table-row>
+              <td fd-table-cell>{{ row.id }}</td>
+              <td fd-table-cell>{{ row.NombrePaciente }}</td>
+              <td fd-table-cell>{{ row.Telefono }}</td>
+              <td fd-table-cell>{{ row.Estado }}</td>
+              <td fd-table-cell>{{ row.FechayHora }}</td>
+              <td fd-table-cell>
+                <div *ngIf="!row.cancelable">
+                  O.K
+                </div>
+                <div *ngIf="row.cancelable">
+                  <button fd-button label="cancelar" (click)="cancelAppointment(row.id)" >    </button>
+                </div>
+              </td>
+            </tr>
 
-    <td fd-table-cell>
-      <p fd-table-text maxWidth="250px" [noWrap]="true">
-        {{ row.column2 }}
-      </p>
-    </td>
-    <td fd-table-cell>
-      <p fd-table-text maxWidth="250px">
-        {{ row.column3 }}
-      </p>
-    </td>
-    <td fd-table-cell>{{ row.date }}</td>
-    <td fd-table-cell><fd-icon [glyph]="row.type"></fd-icon></td>
-  </tr>
-  </tbody>
-</table>
+            <tr *ngIf="!displayedRows || !displayedRows.length" fd-table-row>
+              <td fd-table-cell [noData]="true">
+                No Results Found!
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </fd-busy-indicator>
+
+        <ng-template let-dialog let-dialogConfig="dialogConfig" #newItemDialog>
+          <fd-dialog [dialogConfig]="dialogConfig" [dialogRef]="dialog">
+            <fd-dialog-header>
+              <h1 fd-title>Nuevo Horario disponible</h1>
+              <button fd-dialog-close-button (click)="dialog.dismiss('Close button')"></button>
+            </fd-dialog-header>
+            <fd-dialog-body>
+              <form [formGroup]="myForm">
+                <div fd-form-set>
+                  <div fd-form-item>
+                    <label fd-form-label for="dateTimePicker">Fecha-Hora Inicio</label>
+                    <fd-datetime-picker inputId="dateTimePicker" formControlName="startInput" id="dateTimePicker" ></fd-datetime-picker>
+                  </div>
+                  <div fd-form-item>
+                    <label fd-form-label for="dateTimePicker2">Fecha-Hora Cierre</label>
+                    <fd-datetime-picker inputId="dateTimePicker2" formControlName="endInput" id="dateTimePicker2" ></fd-datetime-picker>
+                  </div>
+                </div>
+              </form>
+            </fd-dialog-body>
+            <fd-dialog-footer>
+              <fd-button-bar
+                fdType="emphasized"
+                label="Save"
+                type="submit"
+                (click)="dialog.close('Save')">
+              </fd-button-bar>
+              <fd-button-bar
+                fd-initial-focus
+                label="Cancel"
+                (click)="dialog.dismiss('Cancel')">
+              </fd-button-bar>
+            </fd-dialog-footer>
+          </fd-dialog>
+        </ng-template>
+      </div>
+    </fd-dynamic-page-content>
+  </fd-dynamic-page>
+</div>

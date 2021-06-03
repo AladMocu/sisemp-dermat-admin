@@ -1,0 +1,10 @@
+{
+  "/api": {
+    "target": "https://dermcentoc.ga",
+    "secure": true,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/api": ""
+    }
+  }
+}
