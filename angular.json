@@ -66,11 +66,12 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
             "browserTarget": "sisemp-admin:build",
-            "proxyConfig": "./proxy.conf.json"
+            "proxyConfig": "src/proxy.conf.json"
           },
           "configurations": {
             "production": {
-              "browserTarget": "sisemp-admin:build:production"
+              "browserTarget": "sisemp-admin:build:production",
+              "proxyConfig": "src/proxy.conf.json"
             }
           }
         },
